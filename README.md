@@ -1,6 +1,6 @@
 # UICrawler
 ## 基于Appium的App UI遍历 & Monkey 工具
-haha
+
 
 * 针对个人和公司提供有偿UI自动化技术、接口自动化技术、接口mock技术等培训及测试工具定制开发
   * QQ 技术交流群 ： 728183683
