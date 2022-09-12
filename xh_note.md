@@ -16,5 +16,5 @@ log中日志配置:src/main/resources/logback.xml
 待办:
 - io.appium7.6.0提示不安全，需要升级io.appium版本
 - 需要加自动处理关闭弹窗的配置(GENERAL)
-- 自定义页面指定操作配置（custom_page_action）
+- 自定义页面指定操作配置（custom_page_action，在clickElement中加逻辑来处理）
 - clickElement中排除掉对当前可见屏幕外的元素截图、点击等操作（done）

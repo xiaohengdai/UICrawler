@@ -925,7 +925,8 @@ public class XPathUtil {
                 }
 
                 //等待新页面初始化
-                Driver.sleep(10);
+//                Driver.sleep(10);
+                Driver.sleep(3);
                 xml = Driver.getPageSource();
             }
         } catch (Exception e) {
@@ -1246,7 +1247,7 @@ public class XPathUtil {
         longPressPointList.add(new Point(centerX, centerY));
         log.info("Center X " + centerX + " Center Y " + centerY);
 
-        Driver.sleep(5);
+        Driver.sleep(1);
 
         ArrayList<String> ratioList = initEventMap();
 
