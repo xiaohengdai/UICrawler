@@ -4,7 +4,7 @@
 
     <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level【%logger{0}:%L】 %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
 
@@ -13,7 +13,7 @@
             <fileNamePattern>log/test-%d{yyyy-MM-dd_HH-mm-ss}.log</fileNamePattern>
         </rollingPolicy>
         <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{5} - %msg%n</pattern>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level 【%logger{0}:%L】%logger{5} - %msg%n</pattern>
         </encoder>
         <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
             <MaxFileSize>500MB</MaxFileSize>
