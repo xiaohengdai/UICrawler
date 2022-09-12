@@ -290,8 +290,11 @@ public class XPathUtil {
 
         //Get screen scale
         scale = Driver.getScreenScale();
+        log.info("scale: "+scale);
         deviceHeight = Driver.getDeviceHeight();
+        log.info("deviceHeight:"+deviceHeight);
         deviceWidth = Driver.getDeviceWidth();
+        log.info("deviceWidth:"+deviceWidth);
 
         ignoreCrash = ConfigUtil.getBooleanValue(ConfigUtil.IGNORE_CRASH);
         //xpath中排除以下属性, 仅限android  小写字母
@@ -396,29 +399,34 @@ public class XPathUtil {
 
     public static String clickElement(MobileElement elem, String xml) {
         log.info("Method: clickElement");
-
         String page = xml;
-
+        //Sometimes, UIA2 will throw StaleObjectException Exception here
+        int x = elem.getCenter().getX();
+        int y = elem.getCenter().getY();
+        //元素显示在界面范围内
+        if (x > deviceWidth || y > deviceHeight ) {
+            log.info("大于当前屏幕宽高，当前可见屏幕外的元素，不进行点击x:"+x+",y:"+y+",deviceWidth:"+deviceWidth+",deviceHeight:"+deviceHeight);
+            return page;
+        }
+        if (x< 0 || y < 0 ) {
+            log.info("小于当前屏幕宽高，当前可见屏幕外的元素，不进行点击x:"+x+",y:"+y+",deviceWidth:"+deviceWidth+",deviceHeight:"+deviceHeight);
+            return page;
+        }
         try {
             String activityName = "";
             if (Util.isAndroid()) {
                 activityName = Driver.getCurrentActivity();
                 log.info("Current Activity name : " + activityName);
-
                 Long clickCount = clickedActivityMap.get(activityName);
-
                 if (clickCount == null) {
                     clickCount = 1L;
                 } else {
                     clickCount++;
                 }
-
                 clickedActivityMap.put(activityName, clickCount);
                 log.info("clickedActivityMap = " + clickedActivityMap);
             }
-
             String elem_tag = elem.getText();
-
             if (!Objects.equals(elem_tag, "")) {
                 HashSet<String> clickedElemSet = clickedElementMap.get(activityName);
                 if (clickedElemSet != null) {
@@ -427,40 +435,27 @@ public class XPathUtil {
                     clickedElementMap.put(activityName, new HashSet<>(Collections.singleton(elem_tag)));
                 }
             }
-
-            //Sometimes, UIA2 will throw StaleObjectException Exception here
-            int x = elem.getCenter().getX();
-            int y = elem.getCenter().getY();
-
             pic = PictureUtil.takeAndModifyScreenShot(x * scale, y * scale);
             clickCount++;
             elem.click();
-
             log.info("------------------------CLICK " + clickCount + "  X: " + x + " Y: " + y + " --------------------------");
-
             //等待新UI初始化 时间需要
             Driver.sleep(0.6);
             page = Driver.getPageSource();
             String appName = getAppName(page);
-
             PackageStatus status = isValidPackageName(appName, false);
-
             if (PackageStatus.VALID != status) {
                 page = Driver.getPageSource();
             }
-
             if (clickCount >= ConfigUtil.getClickCount()) {
                 stop = true;
             }
-
             String temp = "";
-
             try {
                 String elemStr = elem.toString();
                 List<String> inputClassList = ConfigUtil.getListValue(ConfigUtil.INPUT_CLASS_LIST);
                 List<String> inputTextList = ConfigUtil.getListValue(ConfigUtil.INPUT_TEXT_LIST);
                 int size = inputClassList.size();
-
                 for (String elemClass : inputClassList) {
                     temp = elemClass;
                     if (elemStr.contains(elemClass)) {
@@ -985,6 +980,7 @@ public class XPathUtil {
 
     public static String getNodeXpath(Node node, boolean structureOnly) {
         int length = node.getAttributes().getLength();
+        log.info("length:"+length);
         StringBuilder nodeXpath = new StringBuilder("//" + node.getNodeName() + "[");
         //xpath中排除以下属性, 仅限android  小写字母
         //final List<String> nodeNameExcludeList = new ArrayList<>(Arrays.asList("selected","instance","checked","naf","content-desc"));
@@ -1044,14 +1040,17 @@ public class XPathUtil {
                 int endX = Integer.parseInt(value.substring(indexNext + 1, index));
                 int endY = Integer.parseInt(value.substring(index + 1, value.length() - 1));
 
-                //log.info(String.valueOf(startX));log.info(String.valueOf(startY));log.info(String.valueOf(endX));log.info(String.valueOf(endY));
+                log.info("startX:"+(startX));
+                log.info("startY:"+(startY));
+                log.info("endX:"+(endX));
+                log.info("endY:"+(endY));
 
                 //元素显示在界面范围内
                 if (startX < 0 || startY < 0 || endX < 0 || endY < 0) {
                     log.info("<0 ----Removed-----" + nodeValue);
                     return null;
                 }
-
+                //元素显示在界面范围内
                 if (startX > deviceWidth || endX > deviceWidth || startY > deviceHeight || endY > deviceHeight) {
                     log.info(">max ----Removed-----" + nodeValue);
                     return null;
